@@ -18,7 +18,7 @@ def solver(first_number, second_number, arith_operation):
         answer = first_number + second_number
     elif arith_operation == '-': 
         answer = first_number - second_number
-    else: 
+    else:
         answer = first_number * second_number
     return problem_string, answer
 
