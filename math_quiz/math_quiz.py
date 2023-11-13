@@ -30,23 +30,23 @@ def math_quiz():
     print("You will be presented with math problems, and you need to provide "\
           "the correct answers.")
 
-    for question_num in range(1,total_questions+1):
+    for question_num in range(total_questions):
         
         first_number = generate_random_number(1, 10)
         second_number = generate_random_number(1, 10)
         arith_operation = generate_operation()
 
-        PROBLEM, ANSWER = solver(first_number, second_number, arith_operation)
-        print(f"\nQuestion {question_num}: {PROBLEM}")
+        question, answer = solver(first_number, second_number, arith_operation)
+        print(f"\nQuestion {question_num+1}: {question}")
         useranswer = input("Your answer: ")
         ###Try and except block to catch invalid user input###
         try:
             useranswer = int(useranswer)
-            if useranswer == ANSWER: 
+            if useranswer == answer: 
                 print("Correct! You earned a point.")
                 user_points = user_points + 1
             else:
-                print(f"Wrong answer. The correct answer is {ANSWER}.")
+                print(f"Wrong answer. The correct answer is {answer}.")
         except Exception as e:
             print(f"""
                   You entered a non-number string! Try again. 
