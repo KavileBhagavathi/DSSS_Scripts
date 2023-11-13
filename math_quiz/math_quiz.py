@@ -23,8 +23,8 @@ def solver(first_number, second_number, arith_operation):
     return problem_string, answer
 
 def math_quiz():
-    user_points = 0
-    total_questions = 10
+    user_points = 0 #Variable to count the user points
+    total_questions = 10 #Variable to set the number of questions
 
     print("Welcome to the Math Quiz Game!")
     print("You will be presented with math problems, and you need to provide "\
