@@ -8,7 +8,8 @@ import sys # System-specific parameters and functions
 
 from PyQt5.QtWidgets import (QApplication, QPushButton, QWidget,QMainWindow,
                              QFileDialog, QGridLayout, QLabel, QVBoxLayout, 
-                             QHBoxLayout, QMessageBox, QComboBox, QShortcut)
+                             QHBoxLayout, QMessageBox, QComboBox, QShortcut,
+                             QDialog)
 from PyQt5.QtCore import Qt, QMimeData
 from PyQt5.QtGui import QDrag, QKeySequence
 from PIL import ImageQt
@@ -23,11 +24,13 @@ class Interface(QWidget):
         self.l.addWidget(self.imv)
         
 class DropDown(QComboBox):
+    """CLass for drop down functionality"""
     def __init__(self,items):
         super().__init__()
         self.items = items
         self.addItems(self.items)
 class MyApp(QMainWindow):
+    """Main class for the application"""
     def __init__(self):
         super().__init__()
         
@@ -51,14 +54,23 @@ class MyApp(QMainWindow):
         # save_shortcut = QtWidgets.QShortcut(("Ctrl+S"), self)
         # save_shortcut.activated.connect(self.save_image)
     def saveEvent(self):
+        """Function for save image functionality"""
         fn, _ = QFileDialog.getSaveFileName(self, 'Save Image', filter="*.png *.jpg")
         #image = ImageQt.fromqpixmap(self.im)
         #image.save("test_save.png")
         if fn:
-            io.write(fn,self.im)
-            self.show_message("Image save succes!")
+            io.imwrite(fn,self.im)
+            message_box = QMessageBox()
+            message_box.setIcon(QMessageBox.Information)
+            message_box.setText("Image saved successfully!")
+            message_box.setStandardButtons(QMessageBox.Ok)
+            message_box.exec()
         else:
-            self.show_message("Error: Image was not saved")
+            message_box = QMessageBox()
+            message_box.setIcon(QMessageBox.Critical)
+            message_box.setText("There was an error saving the file")
+            message_box.setStandardButtons(QMessageBox.Ok)
+            message_box.exec()
     # def save_image(self):
     #     if self.im is not None:
     #         fn, _ = QFileDialog.getSaveFileName(self, 'Save Image', filter="*.png *.jpg")
@@ -68,12 +80,14 @@ class MyApp(QMainWindow):
     #         else:
     #             self.show_message("Error trying to save the image!", is_error=True)
     def update_language_dd(self,index):
+        """Function to update language from dropdown"""
         self.index_language = index
         self.language = self.available_languages[self.index_language]
         self.setWindowTitle(self.options["available languages"][self.language]["window title"])
         self.open_button.setText(self.open_button["available languages"][self.language]["button"])
         self.set_dropdowns()
     def set_default(self):
+        """Load default settings"""
         self.status = self.statusBar()
         self.im = None
         with open("settings.json","r") as jsonfile:
@@ -115,16 +129,19 @@ class MyApp(QMainWindow):
             message_box.setStandardButtons(QMessageBox.Ok)
             message_box.exec()
     def dragEnterEvent(self,event):
+        """Function for dragged image be recognized when entering window"""
         if event.mimeData().hasImage:
             event.accept()
         else:
             event.ignore()
     def dragMoveEvent(self,event):
+        """Function for copying the image to application when dragged in"""
         if event.mimeData().hasImage:
             event.setDropAction(Qt.CopyAction)
         else:
             event.ignore()        
     def dropEvent(self,event):
+        """Read image which is being dragged"""
         if event.mimeData().hasImage:
             fn = event.mimeData().urls()[0].toLocalFile()
             self.im = io.imread(fn)
