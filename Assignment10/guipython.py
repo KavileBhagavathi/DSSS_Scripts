@@ -7,7 +7,11 @@ Created on Mon Feb  5 14:59:30 2024
 import sys # System-specific parameters and functions
 
 from PyQt5.QtWidgets import (QApplication, QPushButton, QWidget,QMainWindow,
-                             QFileDialog, QGridLayout, QLabel, QVBoxLayout, QHBoxLayout, QMessageBox, QComboBox)
+                             QFileDialog, QGridLayout, QLabel, QVBoxLayout, 
+                             QHBoxLayout, QMessageBox, QComboBox, QShortcut)
+from PyQt5.QtCore import Qt, QMimeData
+from PyQt5.QtGui import QDrag, QKeySequence
+from PIL import ImageQt
 import pyqtgraph as pg
 import json
 import imageio.v2 as io
@@ -30,7 +34,7 @@ class MyApp(QMainWindow):
         self.set_default()
         w = QWidget(self)
         self.setCentralWidget(w)
-        
+        self.setAcceptDrops(True)
         self.main_layout = QVBoxLayout()
         w.setLayout(self.main_layout)
         self.dropdown_box = QVBoxLayout()
@@ -42,7 +46,27 @@ class MyApp(QMainWindow):
         self.main_layout.addWidget(self.open_button)
         self.image_viewer = Interface()
         self.main_layout.addWidget(self.image_viewer)
-    
+        self.add = QShortcut(QKeySequence("Ctrl+S"), self)
+        self.add.activated.connect(self.saveEvent)
+        # save_shortcut = QtWidgets.QShortcut(("Ctrl+S"), self)
+        # save_shortcut.activated.connect(self.save_image)
+    def saveEvent(self):
+        fn, _ = QFileDialog.getSaveFileName(self, 'Save Image', filter="*.png *.jpg")
+        #image = ImageQt.fromqpixmap(self.im)
+        #image.save("test_save.png")
+        if fn:
+            io.write(fn,self.im)
+            self.show_message("Image save succes!")
+        else:
+            self.show_message("Error: Image was not saved")
+    # def save_image(self):
+    #     if self.im is not None:
+    #         fn, _ = QFileDialog.getSaveFileName(self, 'Save Image', filter="*.png *.jpg")
+    #         if fn:
+    #             io.imwrite(fn, self.im)
+    #             self.show_message("Image was saved successfully!")
+    #         else:
+    #             self.show_message("Error trying to save the image!", is_error=True)
     def update_language_dd(self,index):
         self.index_language = index
         self.language = self.available_languages[self.index_language]
@@ -90,7 +114,24 @@ class MyApp(QMainWindow):
             message_box.setText("No images selected")
             message_box.setStandardButtons(QMessageBox.Ok)
             message_box.exec()
-        
+    def dragEnterEvent(self,event):
+        if event.mimeData().hasImage:
+            event.accept()
+        else:
+            event.ignore()
+    def dragMoveEvent(self,event):
+        if event.mimeData().hasImage:
+            event.setDropAction(Qt.CopyAction)
+        else:
+            event.ignore()        
+    def dropEvent(self,event):
+        if event.mimeData().hasImage:
+            fn = event.mimeData().urls()[0].toLocalFile()
+            self.im = io.imread(fn)
+            self.image_viewer.imv.setImage(self.im)
+            event.accept()
+        else:
+            event.ignore()
 def main():
     app = QApplication(sys.argv)
     window = MyApp()

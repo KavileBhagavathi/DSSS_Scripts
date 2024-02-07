@@ -2,14 +2,14 @@
     "available languages": { 
         "english" :    {
                     "label" : "Configurations",
-                    "window title" : "live coding",
+                    "window title" : "Arjun Lenan Sandhya",
                     "first_dropdown" : ["First element", "Second element", "Third element"],
                     "second_dropdown": ["select me", "No, I am better", "I'm the best option..."],
                     "button" : "open image"
         },
         "deutsch":  {
                     "label" : "Einstellungen",
-                    "window title" : "live conding (DE)",
+                    "window title" : "Arjun Lenan Sandhya (DE)",
                     "first_dropdown": ["1. Element", "2. Element", "3. Element" ],
                     "second_dropdown": ["wähl mich aus", "nein, lieber mich", "Ich bin die beste Wahl..."],
                     "button" : "Bild öffnen"
